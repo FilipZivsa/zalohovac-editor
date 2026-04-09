@@ -59,12 +59,31 @@ namespace zalohovac_editor.Presentation.Windows
         {
             try
             {
-                // Vytvoření objektu zálohy z vyplněných polí
+                // --- BONUS: Validace CRONu ---
+                // Vezmeme text a odstraníme mezery na začátku a na konci
+                string cronText = _timingTextBox.Value.Trim();
+
+                // Rozdělíme text podle mezer. RemoveEmptyEntries zajistí, že více mezer za sebou neudělá chybu.
+                string[] cronParts = cronText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                // Kontrola: Má to přesně 5 částí?
+                if (cronParts.Length != 5)
+                {
+                    // Vyhodíme chybové okno (ErrorWindow pochází z předchozího projektu)
+                    IWindow errorWindow = new ErrorWindow("Chyba validace", "CRON musi mit presne 5 casti (napr. '5 4 * * *').", _application, this);
+                    errorWindow.Show();
+
+                    // Příkaz return okamžitě ukončí tuto metodu, takže se nic do JSONu neuloží!
+                    return;
+                }
+                // -----------------------------
+
+                // Pokud kód došel až sem, CRON je validní a můžeme ukládat
                 BackupJob novyJob = new BackupJob
                 {
                     Sources = new List<string> { _sourceTextBox.Value },
                     Targets = new List<string> { _targetTextBox.Value },
-                    Timing = _timingTextBox.Value,
+                    Timing = cronText, // Použijeme náš zkontrolovaný text
                     Method = _methodSelectBox.Value,
                     Retention = new BackupRetention
                     {
@@ -75,7 +94,6 @@ namespace zalohovac_editor.Presentation.Windows
 
                 List<BackupJob> konfigurace = new List<BackupJob> { novyJob };
 
-                // Nastavení JSONu (hezky odřádkované a s malými písmeny na začátku názvů)
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
@@ -83,23 +101,20 @@ namespace zalohovac_editor.Presentation.Windows
                 };
                 options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
-                // Uložení
                 string jsonString = JsonSerializer.Serialize(konfigurace, options);
                 File.WriteAllText("config.json", jsonString);
 
-                // ZMĚNA: Ukončíme aplikaci po úspěšném uložení
+                // Ukončíme aplikaci po úspěšném uložení
                 _application.Stop();
             }
             catch (Exception ex)
             {
-                // ZMĚNA: Pokud nastane chyba, vypíšeme ji a pak okno zavřeme
                 Console.Clear();
                 Console.WriteLine("Jejda, chyba při ukládání: " + ex.Message);
                 Console.ReadKey();
                 _application.Stop();
             }
         }
-
         private void CancelButtonClicked()
         {
             // ZMĚNA: Tlačítko storno nyní rovnou vypne aplikaci
