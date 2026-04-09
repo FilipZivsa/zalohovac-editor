@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace zalohova_editor.Models
+namespace zalohovac_editor.Models
 {
     public class BackupRetention
     {
