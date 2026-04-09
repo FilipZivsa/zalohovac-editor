@@ -1,4 +1,4 @@
-﻿namespace GradeRegisterAdminApp.Presentation.Windows
+﻿namespace zalohovac_editor.Presentation.Windows
 {
     public interface IWindow
     {

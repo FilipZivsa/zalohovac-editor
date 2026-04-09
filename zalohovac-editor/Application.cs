@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using zalohovac_editor.Presentation.Windows; // ZDE BYLA CHYBA (starý projekt)
 
 namespace zalohovac_editor
 {
@@ -22,20 +19,22 @@ namespace zalohovac_editor
             _running = true;
             _activeWindow = window;
 
-            Console.Title = "GradeRegister Admin [v1.0]";
+            Console.Title = "Zalohovac Editor [v1.0]"; // Změnil jsem i název v hlavičce
             Console.CursorVisible = false;
             Console.Clear();
-
+            
             while (_running)
             {
                 Render();
                 HandleKey(Console.ReadKey(true));
             }
         }
+
         public void Stop()
         {
             _running = false;
         }
+
         public void SwitchWindow(IWindow window)
         {
             Console.Clear();
@@ -47,6 +46,7 @@ namespace zalohovac_editor
             Console.SetCursorPosition(0, 0);
             _activeWindow?.Render();
         }
+
         protected void HandleKey(ConsoleKeyInfo keyInfo)
         {
             _activeWindow?.HandleKey(keyInfo);

@@ -1,22 +1,24 @@
-﻿using GradeRegisterAdminApp.Entities;
-using GradeRegisterAdminApp.Helpers;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using zalohovac_editor.Helpers; // Zde zkontroluj, jestli se složka Helpers jmenuje stejně
 
-namespace GradeRegisterAdminApp.Presentation.Components
+namespace zalohovac_editor.Presentation.Components
 {
+    // Odebráno omezení na IEntity a class
     public class SelectBox<T> : BaseComponent
-        where T : class, IEntity
     {
         public override bool Selectable => true;
 
-        public T? Value { get; set; }
+        // Odebráno '?', pracujeme i s hodnotovými typy (jako enum)
+        public T Value { get; set; }
         public List<T> Items { get; set; }
 
         private string _text;
         private int _size;
 
-        public SelectBox(string text, int size = 6)
+        public SelectBox(string text, int size = 15)
         {
-            Value = null;
             Items = new List<T>();
             _text = text;
             _size = size;
@@ -25,8 +27,8 @@ namespace GradeRegisterAdminApp.Presentation.Components
         public override void Render(bool selected)
         {
             string value = Value?.ToString() ?? string.Empty;
-            
-            if(_size < value.Length)
+
+            if (_size < value.Length)
                 _size = value.Length;
 
             char pad = ' ';
@@ -37,10 +39,11 @@ namespace GradeRegisterAdminApp.Presentation.Components
 
             base.Render(selected);
         }
+
         public override void HandleKey(ConsoleKeyInfo keyInfo)
         {
-            T? item = Items.SingleOrDefault(i => i.ID == Value?.ID);
-            int currentIndex = item != null ? Items.IndexOf(item) : -1;
+            // Místo srovnávání přes ID nyní získáme index přímo porovnáním hodnoty (funguje i pro enum)
+            int currentIndex = Value != null ? Items.IndexOf(Value) : -1;
 
             if (keyInfo.Key == ConsoleKey.DownArrow)
             {
@@ -65,10 +68,6 @@ namespace GradeRegisterAdminApp.Presentation.Components
                 {
                     Value = Items[Items.Count - 1];
                 }
-            }
-            else if (keyInfo.Key == ConsoleKey.Delete)
-            {
-                Value = null;
             }
         }
     }

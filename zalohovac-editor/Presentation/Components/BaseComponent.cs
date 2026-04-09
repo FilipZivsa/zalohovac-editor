@@ -1,4 +1,4 @@
-﻿namespace GradeRegisterAdminApp.Presentation.Components
+﻿namespace zalohovac_editor.Presentation.Components
 {
     public abstract class BaseComponent : IComponent
     {

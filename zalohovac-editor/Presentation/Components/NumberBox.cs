@@ -1,6 +1,6 @@
-﻿using GradeRegisterAdminApp.Helpers;
+﻿using zalohovac_editor.Helpers;
 
-namespace GradeRegisterAdminApp.Presentation.Components
+namespace zalohovac_editor.Presentation.Components
 {
     public class NumberBox : BaseComponent
     {

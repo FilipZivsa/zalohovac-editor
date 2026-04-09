@@ -1,6 +1,6 @@
-﻿using GradeRegisterAdminApp.Presentation.Components;
+﻿using zalohovac_editor.Presentation.Components;
 
-namespace GradeRegisterAdminApp.Presentation.Windows
+namespace zalohovac_editor.Presentation.Windows
 {
     public class ErrorWindow : BaseWindow
     {

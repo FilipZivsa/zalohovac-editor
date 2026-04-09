@@ -1,4 +1,4 @@
-﻿namespace GradeRegisterAdminApp.Helpers
+﻿namespace zalohovac_editor.Helpers
 {
     public static class ConsoleHelper
     {
