@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using zalohovac_editor.Presentation.Components;
-using zalohovac_editor.Models; // Uprav, pokud se tvůj namespace jmenuje jinak
+using zalohovac_editor.Models; // Zkontroluj si, že máš správný namespace
 
 namespace zalohovac_editor.Presentation.Windows
 {
@@ -24,10 +24,10 @@ namespace zalohovac_editor.Presentation.Windows
         public JobEditWindow(Application application, IWindow? returnWindow = null)
             : base("Novy Backup Job | Zalohovac Editor", application, returnWindow)
         {
-            // 1. Vytvoření políček
-            _sourceTextBox = new TextBox("Zdrojova cesta: \t", 40);
-            _targetTextBox = new TextBox("Cilova cesta: \t", 40);
-            _timingTextBox = new TextBox("CRON Timing: \t", 15);
+            // ZMĚNA: Upravené texty, aby uživatel věděl o středníku
+            _sourceTextBox = new TextBox("Zdroje (oddelte ;):\t", 40);
+            _targetTextBox = new TextBox("Cile (oddelte ;):\t", 40);
+            _timingTextBox = new TextBox("CRON Timing: \t\t", 15);
 
             _methodSelectBox = new SelectBox<BackupMethod>("Metoda: \t\t");
             _methodSelectBox.Items = Enum.GetValues(typeof(BackupMethod)).Cast<BackupMethod>().ToList();
@@ -39,7 +39,6 @@ namespace zalohovac_editor.Presentation.Windows
             _saveButton = new Button("Ulozit do JSON", true);
             _cancelButton = new Button("Ukoncit", true);
 
-            // 2. Registrace do okna (aby fungoval Tab a šipky)
             RegisterComponent(_sourceTextBox);
             RegisterComponent(_targetTextBox);
             RegisterComponent(_timingTextBox);
@@ -50,7 +49,6 @@ namespace zalohovac_editor.Presentation.Windows
             RegisterComponent(_saveButton);
             RegisterComponent(_cancelButton);
 
-            // 3. Přiřazení akcí tlačítkům
             _saveButton.Clicked += SaveButtonClicked;
             _cancelButton.Clicked += CancelButtonClicked;
         }
@@ -59,31 +57,44 @@ namespace zalohovac_editor.Presentation.Windows
         {
             try
             {
-                // --- BONUS: Validace CRONu ---
-                // Vezmeme text a odstraníme mezery na začátku a na konci
+                // --- BONUS 4: Validace CRONu ---
                 string cronText = _timingTextBox.Value.Trim();
-
-                // Rozdělíme text podle mezer. RemoveEmptyEntries zajistí, že více mezer za sebou neudělá chybu.
                 string[] cronParts = cronText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-                // Kontrola: Má to přesně 5 částí?
                 if (cronParts.Length != 5)
                 {
-                    // Vyhodíme chybové okno (ErrorWindow pochází z předchozího projektu)
                     IWindow errorWindow = new ErrorWindow("Chyba validace", "CRON musi mit presne 5 casti (napr. '5 4 * * *').", _application, this);
                     errorWindow.Show();
-
-                    // Příkaz return okamžitě ukončí tuto metodu, takže se nic do JSONu neuloží!
                     return;
                 }
-                // -----------------------------
 
-                // Pokud kód došel až sem, CRON je validní a můžeme ukládat
+                // --- BONUS 2: Více zdrojů a cílů ---
+                // Rozsekneme text, odstraníme z cest mezery a uložíme do Listu
+                List<string> zdroje = _sourceTextBox.Value
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(cesta => cesta.Trim())
+                    .ToList();
+
+                List<string> cile = _targetTextBox.Value
+                    .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(cesta => cesta.Trim())
+                    .ToList();
+
+                // Kontrola, jestli uživatel nezadal prázdné políčko
+                if (zdroje.Count == 0 || cile.Count == 0)
+                {
+                    IWindow errorWindow = new ErrorWindow("Chyba validace", "Musite zadat alespon jeden zdroj a cil.", _application, this);
+                    errorWindow.Show();
+                    return;
+                }
+                // ------------------------------------
+
+                // Místo textu nyní přidáváme rovnou naše vytvořené Listy 'zdroje' a 'cile'
                 BackupJob novyJob = new BackupJob
                 {
-                    Sources = new List<string> { _sourceTextBox.Value },
-                    Targets = new List<string> { _targetTextBox.Value },
-                    Timing = cronText, // Použijeme náš zkontrolovaný text
+                    Sources = zdroje,
+                    Targets = cile,
+                    Timing = cronText,
                     Method = _methodSelectBox.Value,
                     Retention = new BackupRetention
                     {
@@ -104,7 +115,6 @@ namespace zalohovac_editor.Presentation.Windows
                 string jsonString = JsonSerializer.Serialize(konfigurace, options);
                 File.WriteAllText("config.json", jsonString);
 
-                // Ukončíme aplikaci po úspěšném uložení
                 _application.Stop();
             }
             catch (Exception ex)
@@ -115,9 +125,9 @@ namespace zalohovac_editor.Presentation.Windows
                 _application.Stop();
             }
         }
+
         private void CancelButtonClicked()
         {
-            // ZMĚNA: Tlačítko storno nyní rovnou vypne aplikaci
             _application.Stop();
         }
     }
