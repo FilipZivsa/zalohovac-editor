@@ -69,7 +69,6 @@ namespace zalohovac_editor.Presentation.Windows
                 }
 
                 // --- BONUS 2: Více zdrojů a cílů ---
-                // Rozsekneme text, odstraníme z cest mezery a uložíme do Listu
                 List<string> zdroje = _sourceTextBox.Value
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(cesta => cesta.Trim())
@@ -80,16 +79,14 @@ namespace zalohovac_editor.Presentation.Windows
                     .Select(cesta => cesta.Trim())
                     .ToList();
 
-                // Kontrola, jestli uživatel nezadal prázdné políčko
                 if (zdroje.Count == 0 || cile.Count == 0)
                 {
                     IWindow errorWindow = new ErrorWindow("Chyba validace", "Musite zadat alespon jeden zdroj a cil.", _application, this);
                     errorWindow.Show();
                     return;
                 }
-                // ------------------------------------
 
-                // Místo textu nyní přidáváme rovnou naše vytvořené Listy 'zdroje' a 'cile'
+                // --- Vytvoření aktuálního objektu ---
                 BackupJob novyJob = new BackupJob
                 {
                     Sources = zdroje,
@@ -103,8 +100,11 @@ namespace zalohovac_editor.Presentation.Windows
                     }
                 };
 
-                List<BackupJob> konfigurace = new List<BackupJob> { novyJob };
+                // Připravíme si prázdný seznam pro konfigurace
+                List<BackupJob> konfigurace = new List<BackupJob>();
+                string soubor = "config.json";
 
+                // Nastavení pro formátování (ukládání i načítání)
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,
@@ -112,8 +112,27 @@ namespace zalohovac_editor.Presentation.Windows
                 };
                 options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
+                // --- BONUS 1 & 3: Načtení existujícího souboru ---
+                if (File.Exists(soubor))
+                {
+                    string existujiciText = File.ReadAllText(soubor);
+                    // Pokud soubor není úplně prázdný, převedeme text zpět na List
+                    if (!string.IsNullOrWhiteSpace(existujiciText))
+                    {
+                        var nactenaData = JsonSerializer.Deserialize<List<BackupJob>>(existujiciText, options);
+                        if (nactenaData != null)
+                        {
+                            konfigurace = nactenaData;
+                        }
+                    }
+                }
+
+                // Přidáme náš nový úkol NA KONEC seznamu (ať už byl předtím prázdný, nebo obsahoval stará data)
+                konfigurace.Add(novyJob);
+
+                // Celý seznam uložíme zpět do souboru
                 string jsonString = JsonSerializer.Serialize(konfigurace, options);
-                File.WriteAllText("config.json", jsonString);
+                File.WriteAllText(soubor, jsonString);
 
                 _application.Stop();
             }
@@ -125,7 +144,6 @@ namespace zalohovac_editor.Presentation.Windows
                 _application.Stop();
             }
         }
-
         private void CancelButtonClicked()
         {
             _application.Stop();
