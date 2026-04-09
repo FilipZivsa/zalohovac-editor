@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using zalohovac_editor.Presentation.Components;
-using zalohovac_editor.Models; // Zkontroluj si, že máš správný namespace
+using zalohovac_editor.Models; 
 
 namespace zalohovac_editor.Presentation.Windows
 {
@@ -24,7 +24,7 @@ namespace zalohovac_editor.Presentation.Windows
         public JobEditWindow(Application application, IWindow? returnWindow = null)
             : base("Novy Backup Job | Zalohovac Editor", application, returnWindow)
         {
-            // ZMĚNA: Upravené texty, aby uživatel věděl o středníku
+           
             _sourceTextBox = new TextBox("Zdroje (oddelte ;):\t", 40);
             _targetTextBox = new TextBox("Cile (oddelte ;):\t", 40);
             _timingTextBox = new TextBox("CRON Timing: \t\t", 15);
@@ -57,7 +57,7 @@ namespace zalohovac_editor.Presentation.Windows
         {
             try
             {
-                // --- BONUS 4: Validace CRONu ---
+                // Validace CRON
                 string cronText = _timingTextBox.Value.Trim();
                 string[] cronParts = cronText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -68,7 +68,7 @@ namespace zalohovac_editor.Presentation.Windows
                     return;
                 }
 
-                // --- BONUS 2: Více zdrojů a cílů ---
+                // více targets a sources oddělených středníkem
                 List<string> zdroje = _sourceTextBox.Value
                     .Split(';', StringSplitOptions.RemoveEmptyEntries)
                     .Select(cesta => cesta.Trim())
@@ -86,7 +86,7 @@ namespace zalohovac_editor.Presentation.Windows
                     return;
                 }
 
-                // --- Vytvoření aktuálního objektu ---
+                // vytvoření aktuálního objektu 
                 BackupJob novyJob = new BackupJob
                 {
                     Sources = zdroje,
@@ -100,7 +100,7 @@ namespace zalohovac_editor.Presentation.Windows
                     }
                 };
 
-                // Připravíme si prázdný seznam pro konfigurace
+                // prázdný seznam pro konfigurace
                 List<BackupJob> konfigurace = new List<BackupJob>();
                 string soubor = "config.json";
 
@@ -112,11 +112,11 @@ namespace zalohovac_editor.Presentation.Windows
                 };
                 options.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
 
-                // --- BONUS 1 & 3: Načtení existujícího souboru ---
+                //Načtení existujícího souboru
                 if (File.Exists(soubor))
                 {
                     string existujiciText = File.ReadAllText(soubor);
-                    // Pokud soubor není úplně prázdný, převedeme text zpět na List
+                    // Pokud soubor není úplně prázdný, text zpět na List
                     if (!string.IsNullOrWhiteSpace(existujiciText))
                     {
                         var nactenaData = JsonSerializer.Deserialize<List<BackupJob>>(existujiciText, options);
@@ -127,10 +127,10 @@ namespace zalohovac_editor.Presentation.Windows
                     }
                 }
 
-                // Přidáme náš nový úkol NA KONEC seznamu (ať už byl předtím prázdný, nebo obsahoval stará data)
+                // Přidá nový úkol na konec seznamu (ať už byl předtím prázdný, nebo obsahoval starý data)
                 konfigurace.Add(novyJob);
 
-                // Celý seznam uložíme zpět do souboru
+                // Celý seznam uložen zpět do souboru
                 string jsonString = JsonSerializer.Serialize(konfigurace, options);
                 File.WriteAllText(soubor, jsonString);
 

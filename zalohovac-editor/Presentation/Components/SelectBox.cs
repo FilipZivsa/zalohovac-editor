@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using zalohovac_editor.Helpers; // Zde zkontroluj, jestli se složka Helpers jmenuje stejně
+using zalohovac_editor.Helpers; 
 
 namespace zalohovac_editor.Presentation.Components
 {
-    // Odebráno omezení na IEntity a class
+ 
     public class SelectBox<T> : BaseComponent
     {
         public override bool Selectable => true;
 
-        // Odebráno '?', pracujeme i s hodnotovými typy (jako enum)
+       
         public T Value { get; set; }
         public List<T> Items { get; set; }
 
@@ -42,7 +42,7 @@ namespace zalohovac_editor.Presentation.Components
 
         public override void HandleKey(ConsoleKeyInfo keyInfo)
         {
-            // Místo srovnávání přes ID nyní získáme index přímo porovnáním hodnoty (funguje i pro enum)
+           
             int currentIndex = Value != null ? Items.IndexOf(Value) : -1;
 
             if (keyInfo.Key == ConsoleKey.DownArrow)

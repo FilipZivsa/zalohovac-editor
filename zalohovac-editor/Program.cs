@@ -7,13 +7,13 @@ namespace zalohovac_editor // Tvůj hlavní namespace
     {
         static void Main(string[] args)
         {
-            // Vytvoříme hlavní smyčku aplikace
+            // hlavní smyčka aplikace
             Application app = new Application();
 
-            // Vytvoříme naše nové okno pro editaci
+            //nové okno pro editaci
             JobEditWindow mainWindow = new JobEditWindow(app);
 
-            // Spustíme aplikaci a předáme jí toto okno ke zobrazení
+            //sppustit aplikaci -  a předání jí toto okno ke zobrazení
             app.Run(mainWindow);
         }
     }

@@ -9,11 +9,7 @@ namespace zalohovac_editor.Models
 {
     public class BackupJob
     {
-        //we do not have a constructor for this class, because it is used as a DTO (Data Transfer Object)
-        //for serialization and deserialization of JSON data.
-        //for readability
 
-        //using lists, because we can have multiple sources and targets
 
        
         public List<string> Sources { get; set; }

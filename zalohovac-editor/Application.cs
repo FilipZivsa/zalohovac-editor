@@ -1,5 +1,5 @@
 ﻿using System;
-using zalohovac_editor.Presentation.Windows; // ZDE BYLA CHYBA (starý projekt)
+using zalohovac_editor.Presentation.Windows; 
 
 namespace zalohovac_editor
 {
@@ -19,7 +19,7 @@ namespace zalohovac_editor
             _running = true;
             _activeWindow = window;
 
-            Console.Title = "Zalohovac Editor [v1.0]"; // Změnil jsem i název v hlavičce
+            Console.Title = "Zalohovac Editor [v1.0]"; 
             Console.CursorVisible = false;
             Console.Clear();
             
