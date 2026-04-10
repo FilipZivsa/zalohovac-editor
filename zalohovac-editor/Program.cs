@@ -1,13 +1,13 @@
 ﻿using zalohovac_editor;
 using zalohovac_editor.Presentation.Windows;
 
-namespace zalohovac_editor // Tvůj hlavní namespace
+namespace zalohovac_editor 
 {
     class Program
     {
         static void Main(string[] args)
         {
-            // hlavní smyčka aplikace
+           
             Application app = new Application();
 
             //nové okno pro editaci

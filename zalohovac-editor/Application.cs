@@ -6,6 +6,8 @@ namespace zalohovac_editor
     public class Application
     {
         private bool _running;
+
+        //ktere okno je zobrazene
         private IWindow? _activeWindow;
 
         public Application()
